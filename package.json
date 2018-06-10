@@ -1,0 +1,27 @@
+{
+  "name": "express_restapi_boilerplate",
+  "version": "1.0.0",
+  "description": "a boilerplate to quickly startup  a restapi with express",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RaymondMik/express_restapi_boilerplate.git"
+  },
+  "keywords": [
+    "Express",
+    "Node.js",
+    "REST",
+    "API",
+    "Mongodb",
+    "Mongoose"
+  ],
+  "author": "Ramon Miklus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RaymondMik/express_restapi_boilerplate/issues"
+  },
+  "homepage": "https://github.com/RaymondMik/express_restapi_boilerplate#readme"
+}
