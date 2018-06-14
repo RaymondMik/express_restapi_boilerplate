@@ -7,5 +7,5 @@ if (env === 'development') {
 
 if (env === 'test') {
   process.env.PORT = 3000;
-  process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/GetARideLocal';
+  process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/GetARideTest';
 }

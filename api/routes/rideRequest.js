@@ -5,7 +5,7 @@ const {mongoose} = require('../../database/mongoose.js');
 const {RideRequest} = require('../../database/models/rideRequest.js');
 const {validateId} = require('../../utilities');
 
-// GET ALL RIDEREQUESTS route
+// GET ALL RIDE REQUESTS route
 router.get('/', (req, res) => {
     RideRequest.find()
         .then((requests) => {
@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
         });
 });
 
-// GET SINGLE RIDEREQUEST route
+// GET SINGLE RIDE REQUEST route
 router.get('/:id', (req, res) => {
     validateId(req.params.id, 400);
 
@@ -29,7 +29,7 @@ router.get('/:id', (req, res) => {
         });  
 });
 
-// POST RIDEREQUEST route
+// POST RIDE REQUEST route
 router.post('/', (req, res) => {
     const newRideRequest = new RideRequest({
         userId: req.body.userId,
@@ -46,7 +46,7 @@ router.post('/', (req, res) => {
     });
 });
 
-// DELETE SINGLE RIDEREQUEST route
+// DELETE SINGLE RIDE REQUEST route
 router.delete('/:id', (req, res) => {
     validateId(req.params.id, 400);
 
@@ -60,7 +60,7 @@ router.delete('/:id', (req, res) => {
         });
 });
 
-// UPDATE SINGLE RIDEREQUEST route
+// UPDATE SINGLE RIDE REQUEST route
 router.patch('/:id', (req, res) => {
     validateId(req.params.id, 400);
 
