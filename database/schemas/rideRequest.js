@@ -6,7 +6,7 @@ const RideRequestSchema = mongoose.Schema({
     dropOff: { type: Number, required: true }, // Decimal Degrees ex.41.40338, 2.17403
     passengers: { type: Number, required: true, default: 1,  },
     date: { type: Date, required: false, default: Date.now,  },
-    status: { type: String, required: false, default: 'open' }
+    status: { type: String, enum: ['open', 'accepted', 'rejected', 'cancelled', 'closed'], required: false, default: 'open' }
 });
 
 module.exports.RideRequestSchema = RideRequestSchema;

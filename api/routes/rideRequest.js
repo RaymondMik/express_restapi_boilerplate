@@ -7,24 +7,26 @@ const {validateId} = require('../../utilities');
 
 // GET ALL RIDEREQUESTS route
 router.get('/', (req, res) => {
-    RideRequest.find().then((requests) => {
-        res.send({requests});
-    }).catch( (error) => {
-        res.status(400).send(error);
-    });
+    RideRequest.find()
+        .then((requests) => {
+            res.send({requests});
+        }).catch( (error) => {
+            res.status(400).send(error);
+        });
 });
 
 // GET SINGLE RIDEREQUEST route
 router.get('/:id', (req, res) => {
-    validateId(req.params.id);
+    validateId(req.params.id, 400);
 
-    RideRequest.findById(req.params.id).then((rideRequest) => {
-        if (!rideRequest) return res.status(404).send('rideRequest not found');
+    RideRequest.findById(req.params.id)
+        .then((rideRequest) => {
+            if (!rideRequest) return res.status(404).send('rideRequest not found');
 
-        res.send(rideRequest);
-    }).catch((e) => {
-        res.status(500).send(`The following error ${e} occured while fetching data`);
-    });  
+            res.send(rideRequest);
+        }).catch((e) => {
+            res.status(500).send(`The following error ${e} occured while fetching data`);
+        });  
 });
 
 // POST RIDEREQUEST route
@@ -45,7 +47,35 @@ router.post('/', (req, res) => {
 });
 
 // DELETE SINGLE RIDEREQUEST route
+router.delete('/:id', (req, res) => {
+    validateId(req.params.id, 400);
+
+    RideRequest.findByIdAndRemove(req.params.id)
+        .then((result) => {
+            if (!result) return res.status(404).send('RideRequest not found');
+
+            res.status(200).send(result);
+        }).catch((e) => {
+            return res.status(500).send('There was an error while deleting RideRequest');
+        });
+});
 
 // UPDATE SINGLE RIDEREQUEST route
+router.patch('/:id', (req, res) => {
+    validateId(req.params.id, 400);
+
+    const body = {status: req.body.status};
+
+    if (typeof body.status !== 'string') {
+        return res.status(400).send(`The paramater 'status' should be either 'open', 'accepted', 'rejected', 'cancelled', 'closed'`);
+    }
+
+    RideRequest.findByIdAndUpdate(req.params.id, {$set: body}, {new: true, runValidators: true})
+        .then( (rideRequest) => { 
+            if (!rideRequest) return res.status(404).send();
+
+            return res.send({rideRequest});
+        }).catch( (err) => res.status(500).send('There was an error while updating RideRequest'));
+});
 
 module.exports = router;
