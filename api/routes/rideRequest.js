@@ -3,7 +3,6 @@ const router = express.Router();
 const {ObjectID} = require('mongodb');
 const {mongoose} = require('../../database/mongoose.js');
 const {RideRequest} = require('../../database/models/rideRequest.js');
-const {validateId} = require('../../utilities');
 
 // GET ALL RIDE REQUESTS route
 router.get('/', (req, res) => {
@@ -17,7 +16,7 @@ router.get('/', (req, res) => {
 
 // GET SINGLE RIDE REQUEST route
 router.get('/:id', (req, res) => {
-    validateId(req.params.id, 400);
+    if (!ObjectID.isValid(req.params.id)) return res.status(400).send(`The ID: ${req.params.id} is not valid`);
 
     RideRequest.findById(req.params.id)
         .then((rideRequest) => {
@@ -48,7 +47,7 @@ router.post('/', (req, res) => {
 
 // DELETE SINGLE RIDE REQUEST route
 router.delete('/:id', (req, res) => {
-    validateId(req.params.id, 400);
+    if (!ObjectID.isValid(req.params.id)) return res.status(400).send(`The ID: ${req.params.id} is not valid`);
 
     RideRequest.findByIdAndRemove(req.params.id)
         .then((result) => {
@@ -62,7 +61,7 @@ router.delete('/:id', (req, res) => {
 
 // UPDATE SINGLE RIDE REQUEST route
 router.patch('/:id', (req, res) => {
-    validateId(req.params.id, 400);
+    if (!ObjectID.isValid(req.params.id)) return res.status(400).send(`The ID: ${req.params.id} is not valid`);
 
     const body = {status: req.body.status};
 
