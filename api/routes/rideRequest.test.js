@@ -4,6 +4,8 @@ const {ObjectID} = require('mongodb');
 const {app} = require('../../app.js');
 const {RideRequest} = require('../../database/models/rideRequest.js');
 
+const URL_FRAGMENT = '/ride-requests';
+
 const mockRideRequests = [
     {
         passengers: 3,
@@ -35,7 +37,7 @@ beforeEach((done) => {
 describe('GET /ride-requests route', () => {
     test('all ride requests should be returned', (done) => {
         request(app)
-            .get('/ride-requests')
+            .get(URL_FRAGMENT)
             .expect(200)
             .expect((res) => {
                 expect(res.body.requests.length).toBe(mockRideRequests.length);
@@ -45,7 +47,7 @@ describe('GET /ride-requests route', () => {
 
     test('all ride requests should be an array of objects', (done) => {
         request(app)
-            .get('/ride-requests')
+            .get(URL_FRAGMENT)
             .expect(200)
             .expect((res) => {
                 expect(Array.isArray(res.body.requests)).toBe(true);
@@ -61,7 +63,7 @@ describe('GET /ride-requests route', () => {
 describe('GET /ride-requests/:id route', () => {
     test('get a single ride request', (done) => {
         request(app)
-            .get(`/ride-requests/${mockRideRequests[0]._id.toHexString()}`)
+            .get(`${URL_FRAGMENT}/${mockRideRequests[0]._id.toHexString()}`)
             .expect(200)
             .expect((res) => {
                 expect(res.body._id).toEqual(String(mockRideRequests[0]._id));
@@ -72,14 +74,14 @@ describe('GET /ride-requests/:id route', () => {
     test('single ride request not found', (done) => {
         const newHexId = new ObjectID().toHexString();
         request(app)
-            .get(`/ride-requests/${newHexId}`)
+            .get(`${URL_FRAGMENT}/${newHexId}`)
             .expect(404)
             .end(done);
     });
 
     test('invalid id passed to the request', (done) => {
         request(app)
-            .get('/ride-requests/wow1234')
+            .get(`${URL_FRAGMENT}/wow1234`)
             .expect(400)
             .end(done);  
     });
@@ -98,7 +100,7 @@ describe('POST /ride-requests route', () => {
 
         RideRequest.find().then(() => {
             request(app)
-            .post('/ride-requests')
+            .post(URL_FRAGMENT)
             .send(newRideRequest)
             .expect(200)
             .expect((res) => {
@@ -131,7 +133,7 @@ describe('POST /ride-requests route', () => {
 
         RideRequest.find().then(() => {
             request(app)
-            .post('/ride-requests')
+            .post(URL_FRAGMENT)
             .send(newInvalidRideRequest)
             .expect(400)
             .expect((res) => {
@@ -154,7 +156,7 @@ describe('DELETE /ride-requests/:id route', () => {
     test('ride-request was deleted correctly', (done) => {
         const hexId = mockRideRequests[0]._id.toHexString();
         request(app)
-            .delete(`/ride-requests/${hexId}`)
+            .delete(`${URL_FRAGMENT}/${hexId}`)
             .expect(200)
             .expect((res) => expect(res.body._id).toBe(String(mockRideRequests[0]._id))) 
             .end(((err, res) => { 
@@ -171,14 +173,57 @@ describe('DELETE /ride-requests/:id route', () => {
     test('non existing ride-request should fire a 404 error', (done) => {
         const newHexId = new ObjectID().toHexString();
         request(app)
-            .get(`/ride-requests/${newHexId}`)
+            .delete(`${URL_FRAGMENT}${newHexId}`)
             .expect(404)
             .end(done);  
     });
 
-    test('ride-request with invalid id should fire a 400 error', (done) => {
+    test('an invalid id should fire a 400 error', (done) => {
         request(app)
-            .delete(`/ride-requests/bubu1234`)
+            .delete(`${URL_FRAGMENT}/bubu1234`)
+            .expect(400)
+            .end(done);  
+    });
+});
+
+// UPDATE ride request
+describe('PATCH /ride-request/:id route', () => {
+    test('ride request was correctly updated', (done) => {
+        const hexId = mockRideRequests[1]._id.toHexString();
+        request(app)
+            .patch(`${URL_FRAGMENT}/${hexId}`)
+            .send({
+                status: 'closed'
+            })
+            .expect(200)
+            .expect((res) => expect(res.body.rideRequest.status).toEqual('closed'))
+            .end(((err, res) => { 
+                if (err) return done(err); 
+                
+                RideRequest.findById(hexId).then((rideRequest) => {
+                    expect(rideRequest.status).toEqual('closed');
+                    done();
+                }).catch( (e) => done(e));
+            }));  
+    });
+
+    test('ride request id not found should fire a 404 error', (done) => {
+        const newHexId = new ObjectID().toHexString();
+        request(app)
+            .patch(`${URL_FRAGMENT}/${newHexId}`)
+            .send({
+                status: 'closed'
+            })
+            .expect(404)
+            .end(done);  
+    });
+
+    test('an invalid id should fire a 400 error', (done) => {
+        request(app)
+            .patch(`${URL_FRAGMENT}/dog1234`)
+            .send({
+                status: 'closed'
+            })
             .expect(400)
             .end(done);  
     });
